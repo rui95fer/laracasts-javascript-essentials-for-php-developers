@@ -110,3 +110,109 @@
   ```
 
 > **Takeaway:** JavaScript's function and conditional syntax will feel familiar from PHP; pay special attention to string operators, explicit variable declarations, and scope.
+
+## Episode 02 — Data Types
+
+- **JavaScript is dynamically typed: values have types, but a variable can hold values of different types over time. Plain JavaScript has no PHP-style parameter or return type declarations.**
+  ```js
+  var orderTotal = '25';
+  console.log(typeof orderTotal); // "string"
+
+  orderTotal = 25;
+  console.log(typeof orderTotal); // "number"
+  ```
+
+- **A variable declared without an initial value holds `undefined`; an omitted function argument also leaves its parameter `undefined`.**
+  ```js
+  var deliveryDate;
+  console.log(deliveryDate); // undefined
+
+  function showDeliveryDate(date) {
+      console.log(date);
+  }
+
+  showDeliveryDate(); // undefined
+  ```
+
+- **Single and double quotes both create strings; choose quotes that avoid escaping, or escape a matching quote with a backslash.**
+  ```js
+  var statusMessage = "It's ready.";
+  var instruction = 'Click "Save".';
+  var confirmation = 'It\'s saved.';
+  ```
+
+- **Whole numbers and decimal numbers both use JavaScript's `number` type, unlike PHP's separate integer and float types.**
+  ```js
+  var quantity = 3;
+  var unitPrice = 19.95;
+
+  console.log(typeof quantity);  // "number"
+  console.log(typeof unitPrice); // "number"
+  ```
+
+- **The `boolean` type has two values, `true` and `false`, which represent yes/no states. Truthy and falsy rules for other types belong to the conditions lesson.**
+  ```js
+  var isPaid = true;
+  var isShipped = false;
+
+  console.log(typeof isPaid);    // "boolean"
+  console.log(typeof isShipped); // "boolean"
+  ```
+
+- **An object groups named properties; create one with an object literal (`{}`) and use dot syntax to read a property.**
+  ```js
+  var customer = {
+      name: 'Jim',
+      isSubscribed: true
+  };
+
+  console.log(customer.name);   // Jim
+  console.log(typeof customer); // "object"
+  ```
+
+- **Use `null` to express intentional absence, while `undefined` commonly indicates a value has not been supplied. `null` is a primitive (a non-object value); `typeof null` returning `"object"` is a historical quirk.**
+  ```js
+  var selectedCustomer = null; // No customer selected yet.
+  var deliveryDate;            // No value supplied yet.
+
+  console.log(selectedCustomer === null);     // true
+  console.log(deliveryDate === undefined);    // true
+  console.log(null === undefined);            // false
+  console.log(typeof selectedCustomer);       // "object"
+  ```
+
+- **Use arrays for ordered lists with numeric indexes starting at zero, and objects for named key-value data like PHP associative arrays. Arrays are objects, so use `Array.isArray()` to identify them.**
+  ```js
+  var productNames = ['Keyboard', 'Mouse'];
+  var productPrices = { keyboard: 49, mouse: 25 };
+
+  console.log(productNames[0]);             // Keyboard
+  console.log(productPrices.keyboard);      // 49
+  console.log(typeof productNames);         // "object"
+  console.log(Array.isArray(productNames)); // true
+  ```
+
+- **Functions are values: you can store one in a variable and call it through that variable. They are callable objects, and `typeof` identifies them with `"function"`.**
+  ```js
+  var calculateTotal = function (unitPrice, quantity) {
+      return unitPrice * quantity;
+  };
+
+  console.log(calculateTotal(15, 3)); // 45
+  console.log(typeof calculateTotal); // "function"
+  ```
+
+- **The `typeof` operator returns a string describing a value's type at runtime; remember that it cannot distinguish arrays or `null` from ordinary objects. Symbols are another primitive type, introduced here only by name and a type check.**
+  ```js
+  console.log(typeof undefined);         // "undefined"
+  console.log(typeof 'Order confirmed'); // "string"
+  console.log(typeof 25);                // "number"
+  console.log(typeof true);              // "boolean"
+  console.log(typeof Symbol('orderId')); // "symbol"
+  console.log(typeof {});                // "object"
+  console.log(typeof null);              // "object"
+  console.log(typeof []);                // "object"
+  console.log(typeof function () {});    // "function"
+  ```
+
+> **Takeaway:** JavaScript variables can hold different types of values; use `typeof` to inspect them, with a direct `null` check or `Array.isArray()` when you need a more precise answer.
