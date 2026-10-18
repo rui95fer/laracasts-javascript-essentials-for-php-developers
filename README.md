@@ -216,3 +216,146 @@
   ```
 
 > **Takeaway:** JavaScript variables can hold different types of values; use `typeof` to inspect them, with a direct `null` check or `Array.isArray()` when you need a more precise answer.
+
+## Episode 03 — Smooth Operators
+
+- **Use template literals to build strings with variables or expressions: wrap the string in backticks and insert values with `${expression}`. They also allow line breaks, much like PHP heredocs.**
+  ```js
+  var customerName = 'Jim';
+  var unitPrice = 15;
+  var quantity = 3;
+
+  console.log(`Hello, ${customerName}!`); // Hello, Jim!
+  console.log(`Total: ${unitPrice * quantity}`); // Total: 45
+  console.log(`Order confirmed.
+  Thank you, ${customerName}!`);
+  // Order confirmed.
+  // Thank you, Jim!
+  ```
+
+- **JavaScript's `+` adds numbers or joins strings; if either operand is a string, it converts the other to a string. This automatic type conversion is called coercion; prefer template literals when building strings.**
+  ```js
+  console.log(1 + 2);   // 3
+  console.log(1 + '2'); // "12"
+
+  var quantityInput = '2';
+  console.log(Number(quantityInput) + 1); // 3: explicitly convert for addition.
+  ```
+
+- **A chain of `+` operations groups from left to right, so addition can turn into concatenation partway through.**
+  ```js
+  console.log(1 + 2 + '2');             // "32"
+  console.log('1' + 2 + 2);             // "122"
+  console.log(1 + 2 + '2' + [1, 2, 3]); // "321,2,3"
+  // In this concatenation, the array becomes "1,2,3".
+  ```
+
+- **Unlike `+`, subtraction, multiplication, and division convert numeric strings to numbers; an invalid numeric string produces `NaN` (“not a number”).**
+  ```js
+  console.log(1 - '2');       // -1
+  console.log(3 * '2');       // 6
+  console.log(6 / '2');       // 3
+  console.log(3 * 'pending'); // NaN
+  ```
+
+- **When comparing a number with a string, relational operators convert the string to a number; an empty string becomes zero, while a nonnumeric string becomes `NaN` and makes these comparisons false.**
+  ```js
+  console.log(1 < '2');        // true
+  console.log(1 > '');         // true: Number('') is 0.
+  console.log(1 < 'pending');  // false
+  console.log(1 >= 'pending'); // false
+  ```
+
+- **Two strings compare lexicographically (character by character), even when they contain digits; convert them explicitly when you need a numeric comparison.**
+  ```js
+  var firstPrice = '10';
+  var secondPrice = '2';
+
+  console.log(firstPrice < secondPrice);                 // true: '1' comes before '2'.
+  console.log(Number(firstPrice) < Number(secondPrice)); // false
+  ```
+
+- **Falsy values become `false` in Boolean contexts such as `if` conditions; the common ones are `false`, `0`, `-0`, `''`, `null`, `undefined`, and `NaN`. `Boolean()` lets you check this conversion directly.**
+  ```js
+  console.log(Boolean(false));     // false
+  console.log(Boolean(0));         // false
+  console.log(Boolean(-0));        // false
+  console.log(Boolean(''));        // false
+  console.log(Boolean(null));      // false
+  console.log(Boolean(undefined)); // false
+  console.log(Boolean(NaN));       // false
+  ```
+
+- **Unlike PHP, JavaScript treats `'0'` and empty arrays as truthy; ordinary objects are truthy too. Numeric conversion follows different rules, so an empty array can be truthy yet convert to zero.**
+  ```js
+  console.log(Boolean('0')); // true
+  console.log(Boolean([]));  // true
+  console.log(Boolean({}));  // true
+  console.log(Number([]));   // 0
+  console.log(1 > []);       // true: the comparison converts [] to 0.
+  ```
+
+- **Prefer `===` and `!==` when comparing values without type conversion; `==` and `!=` allow coercion. Loose equality follows its own rules, so it does not simply equate all falsy values.**
+  ```js
+  console.log(1 == '1');   // true
+  console.log(1 === '1');  // false
+  console.log(1 != '1');   // false
+  console.log(1 !== '1');  // true
+  console.log(0 === 0);    // true
+
+  console.log(0 == false);       // true
+  console.log(0 == []);          // true
+  console.log(0 == null);        // false
+  console.log(0 == undefined);   // false
+  console.log(null == undefined); // true
+  ```
+
+- **`++` and `--` change a variable by one: the prefix form returns the updated value, while the postfix form returns the previous value.**
+  ```js
+  var quantity = 2;
+
+  console.log(quantity++); // 2; quantity is now 3.
+  console.log(++quantity); // 4; quantity is now 4.
+  console.log(quantity--); // 4; quantity is now 3.
+  console.log(--quantity); // 2; quantity is now 2.
+  ```
+
+- **Spread syntax (`...`) expands an array's elements into another array, allowing you to build a new list.**
+  ```js
+  var currentProducts = ['Keyboard', 'Mouse'];
+  var updatedProducts = [...currentProducts, 'Monitor'];
+
+  console.log(updatedProducts); // ['Keyboard', 'Mouse', 'Monitor']
+  console.log(currentProducts); // ['Keyboard', 'Mouse']
+  ```
+
+- **In a function parameter, `...` is rest syntax: it collects arguments into an array. Here, `reduce()` combines the prices using an arrow function that adds each price to a running total starting at zero.**
+  ```js
+  function sumPrices(...prices) {
+      return prices.reduce((total, price) => total + price, 0);
+  }
+
+  console.log(sumPrices(10, 20, 5)); // 35
+  console.log(sumPrices());          // 0
+  ```
+
+- **`&&` returns the first falsy operand, or the last operand if all are truthy; `||` returns the first truthy operand, or the last if all are falsy. They short-circuit, skipping operands once the result is known; `!` always returns a Boolean.**
+  ```js
+  console.log('ready' && 'saved'); // "saved"
+  console.log(0 && 'saved');       // 0
+  console.log('' || 'Guest');      // "Guest"
+  console.log(!'ready');          // false
+
+  false && console.log('Skipped'); // Does not call console.log().
+  ```
+
+- **JavaScript has no PHP-style spaceship operator (`<=>`); use familiar comparison operators for individual conditions.**
+  ```js
+  var orderTotal = 45;
+
+  console.log(orderTotal < 50);   // true
+  console.log(orderTotal > 50);   // false
+  console.log(orderTotal === 45); // true
+  ```
+
+> **Takeaway:** Pay attention to type conversion: build strings with template literals, convert numeric input explicitly, and use strict equality for predictable comparisons.
