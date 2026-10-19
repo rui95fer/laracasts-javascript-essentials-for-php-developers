@@ -359,3 +359,130 @@
   ```
 
 > **Takeaway:** Pay attention to type conversion: build strings with template literals, convert numeric input explicitly, and use strict equality for predictable comparisons.
+
+## Episode 04 — Controlling Flow
+
+- **Use `if`, `else if`, and `else` to choose between actions, much like PHP: only the first matching branch runs, with `else` handling the remaining cases.**
+  ```js
+  var orderStatus = 'paid';
+
+  if (orderStatus === 'shipped') {
+      console.log('Track your delivery.');
+  } else if (orderStatus === 'paid') {
+      console.log('Preparing your order.');
+  } else {
+      console.log('Waiting for payment.');
+  }
+  // Preparing your order.
+  ```
+
+- **Use the ternary operator to choose a value: `condition ? valueIfTrue : valueIfFalse`.**
+  ```js
+  var isPaid = true;
+  var orderMessage = isPaid ? 'Ready to pack' : 'Payment required';
+
+  console.log(orderMessage); // Ready to pack
+  ```
+
+- **Use `switch` to handle specific values; `default` handles an unmatched value, and `break` prevents execution from continuing into the next case.**
+  ```js
+  var orderStatus = 'paid';
+
+  switch (orderStatus) {
+      case 'paid':
+          console.log('Pack the order.');
+          break;
+      case 'shipped':
+          console.log('Show tracking details.');
+          break;
+      default:
+          console.log('Check the order status.');
+  }
+  // Pack the order.
+  ```
+
+- **A `for` loop puts initialization, the condition checked before each iteration, and the counter update in one place. An iteration is one pass through the loop body.**
+  ```js
+  for (var packageNumber = 1; packageNumber <= 3; packageNumber++) {
+      console.log(packageNumber);
+  }
+  // 1, 2, 3 (one per line)
+  ```
+
+- **A `while` loop checks its condition before each iteration; update the counter so the condition eventually becomes false.**
+  ```js
+  var packageNumber = 1;
+
+  while (packageNumber <= 3) {
+      console.log(packageNumber);
+      packageNumber++;
+  }
+  // 1, 2, 3 (one per line)
+  ```
+
+- **A `do...while` loop checks its condition after the body, so it always runs at least once, even when the condition starts false. End it with a semicolon.**
+  ```js
+  var packageNumber = 1;
+
+  do {
+      console.log(packageNumber);
+      packageNumber++;
+  } while (packageNumber <= 0);
+  // 1: the body runs before the false condition is checked.
+  ```
+
+- **Use `for...of` to read each value from an array when you do not need its index.**
+  ```js
+  var fruits = ['apple', 'banana', 'orange', 'cherry'];
+
+  for (var fruit of fruits) {
+      console.log(fruit);
+  }
+  // apple, banana, orange, cherry (one per line)
+  ```
+
+- **Use `for...in` to read an object's enumerable property names (those available to this loop), then use `object[property]` to read each value. It can also include inherited enumerable properties.**
+  ```js
+  var person = {
+      firstName: 'John',
+      lastName: 'Doe'
+  };
+
+  for (var property in person) {
+      console.log(property + ': ' + person[property]);
+  }
+  // firstName: John
+  // lastName: Doe
+  ```
+
+- **Use `break` to stop a loop immediately, such as when you find the value you need.**
+  ```js
+  var fruits = ['apple', 'banana', 'orange'];
+
+  for (var fruit of fruits) {
+      if (fruit === 'banana') {
+          console.log('Found banana.');
+          break;
+      }
+  }
+  // Found banana.
+  ```
+
+- **Use `continue` to skip the rest of the current iteration and move on to the next one.**
+  ```js
+  var person = {
+      firstName: 'John',
+      lastName: 'Doe'
+  };
+
+  for (var property in person) {
+      if (property === 'firstName') {
+          continue;
+      }
+
+      console.log(property + ': ' + person[property]);
+  }
+  // lastName: Doe
+  ```
+
+> **Takeaway:** JavaScript's conditions and basic loops work much like PHP's; use `for...of` for array values and `for...in` for object property names.
