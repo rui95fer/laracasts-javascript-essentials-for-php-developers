@@ -486,3 +486,105 @@
   ```
 
 > **Takeaway:** JavaScript's conditions and basic loops work much like PHP's; use `for...of` for array values and `for...in` for object property names.
+
+## Episode 05 — Creating Functions
+
+- **Functions are first-class values: you can assign them to variables, pass them as arguments, and return them from other functions. Assigning a function without `()` stores the function; adding `()` calls it.**
+  ```js
+  function calculateTotal(unitPrice, quantity) {
+      return unitPrice * quantity;
+  }
+
+  var totalCalculator = calculateTotal;
+
+  console.log(totalCalculator(15, 3)); // 45
+  ```
+
+- **An ordinary function returns `undefined` when it finishes without returning a value; use `return` to send a result back to the caller.**
+  ```js
+  function doNothing() {}
+
+  function addPrices(firstPrice, secondPrice) {
+      return firstPrice + secondPrice;
+  }
+
+  console.log(doNothing());       // undefined
+  console.log(addPrices(20, 5)); // 25
+  ```
+
+- **A top-level function declaration is available before execution reaches its definition; this behavior is called hoisting.**
+  ```js
+  console.log(addPrices(20, 5)); // 25
+
+  function addPrices(firstPrice, secondPrice) {
+      return firstPrice + secondPrice;
+  }
+  ```
+
+- **A function expression creates a function as a value; when assigning it to a variable, call it only after that assignment executes. With `var`, the variable exists as `undefined` beforehand, so calling it too early throws a `TypeError`.**
+  ```js
+  // subtractDiscount(25, 5); // TypeError: subtractDiscount is not a function.
+
+  var subtractDiscount = function (price, discount) {
+      return price - discount;
+  };
+
+  console.log(subtractDiscount(25, 5)); // 20
+  ```
+
+- **An arrow function with an expression body returns that expression automatically; a body in curly braces needs an explicit `return` to return a result. Arrow functions also handle context (`this`) differently from ordinary functions, a topic for a later lesson.**
+  ```js
+  var calculateTotal = (unitPrice, quantity) => unitPrice * quantity;
+
+  var divide = (dividend, divisor) => {
+      if (divisor === 0) {
+          throw new Error('Cannot divide by zero.');
+      }
+
+      return dividend / divisor;
+  };
+
+  console.log(calculateTotal(15, 3)); // 45
+  console.log(divide(10, 2));        // 5
+  // divide(10, 0); // Throws Error: Cannot divide by zero.
+  ```
+
+- **An anonymous function omits a name after `function`; assigning it to a variable still lets you call it. Function expressions can also include an explicit function name.**
+  ```js
+  var calculateTotal = function (unitPrice, quantity) {
+      return unitPrice * quantity;
+  };
+
+  console.log(calculateTotal(15, 3)); // 45
+  ```
+
+- **An immediately invoked function expression (IIFE) runs as soon as it is created and gives its variables a local scope. Wrap the function in parentheses to make it an expression, then add `()` to call it.**
+  ```js
+  (function () {
+      var orderMessage = 'Order confirmed.';
+      console.log(orderMessage);
+  })(); // Order confirmed.
+
+  // console.log(orderMessage); // ReferenceError: orderMessage is not defined.
+  ```
+
+- **A closure lets a function keep access to variables from its enclosing scope; a returned function can use that access to preserve state between calls. An IIFE's local scope alone does not demonstrate state surviving after it finishes.**
+  ```js
+  // Illustrative extension: keep a counter between calls.
+  function createOrderCounter() {
+      var count = 0;
+
+      return function () {
+          count++;
+          return count;
+      };
+  }
+
+  var nextOrderNumber = createOrderCounter();
+
+  console.log(nextOrderNumber()); // 1
+  console.log(nextOrderNumber()); // 2
+  // count is local to createOrderCounter(), but the returned function retains access.
+  ```
+
+> **Takeaway:** Functions are values you can store and call; their syntax affects when they become available and how they return results, while their scope can keep variables local or preserve state through closures.
