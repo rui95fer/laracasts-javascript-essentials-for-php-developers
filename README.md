@@ -588,3 +588,177 @@
   ```
 
 > **Takeaway:** Functions are values you can store and call; their syntax affects when they become available and how they return results, while their scope can keep variables local or preserve state through closures.
+
+## Episode 06 — Scoping Out The Variables
+
+- **Use `Math.floor(Math.random() * 10) + 1` to generate a whole number from 1 through 10. `Math.random()` returns a number from zero up to, but excluding, one; `Math.floor()` rounds down.**
+  ```js
+  const secretNumber = Math.floor(Math.random() * 10) + 1;
+  // Multiply: 0 up to, but excluding, 10.
+  // Round down: 0 through 9. Add 1: 1 through 10.
+  ```
+
+- **The browser's `prompt()` returns a string or `null` when cancelled; use `Number()` to convert input before checking for `NaN` and values outside the allowed range. The episode's check accepts decimals within the range; it does not enforce whole numbers.**
+  ```js
+  const input = prompt('Enter a number between 1 and 10.');
+  const guess = Number(input);
+
+  if (Number.isNaN(guess) || guess < 1 || guess > 10) {
+      console.log('Please enter a valid number from 1 through 10.');
+  }
+
+  // Number('hello') is NaN; Number('5') is 5.
+  // Number(null) and Number('') are 0, so this check rejects them.
+  // Both endpoints (1 and 10) and a decimal such as 2.5 pass.
+  ```
+
+- **Use `continue` after invalid input and `break` after a correct guess. In this game, invalid input consumes an attempt because `continue` still runs the `for` loop's counter update.**
+  ```js
+  // Adapted game loop; run in a browser.
+  const secretNumber = Math.floor(Math.random() * 10) + 1;
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const guess = Number(prompt('Enter a number between 1 and 10.'));
+
+      if (Number.isNaN(guess) || guess < 1 || guess > 10) {
+          console.log('Please enter a valid number from 1 through 10.');
+          continue;
+      }
+
+      if (guess === secretNumber) {
+          console.log('Congrats, you guessed the number!');
+          break;
+      }
+
+      console.log(guess < secretNumber ? 'Too low.' : 'Too high.');
+  }
+  ```
+
+- **A loop counter can exceed the number of attempts made: after three unsuccessful iterations, a counter starting at one reaches four. Count completed attempts separately when reporting the total.**
+  ```js
+  // Adapted counting example: all three attempts are unsuccessful.
+  const maxAttempts = 3;
+  let attempt;
+  let attemptsUsed = 0;
+
+  for (attempt = 1; attempt <= maxAttempts; attempt++) {
+      attemptsUsed++;
+  }
+
+  console.log(attempt);      // 4: the next condition check fails.
+  console.log(attemptsUsed); // 3: the loop body ran three times.
+  ```
+
+- **Move game state into an IIFE and return the function you want callers to use. The returned function forms a closure: it keeps access to the enclosed variables after the IIFE finishes, while those names are unavailable outside.**
+  ```js
+  // Before: these names are global in a classic browser script.
+  var secretNumber = Math.floor(Math.random() * 10) + 1;
+  var maxAttempts = 3;
+
+  function playGame() {
+      // Game loop uses secretNumber and maxAttempts.
+  }
+  ```
+  ```js
+  // After: alternative version with private state.
+  const playGame = (function () {
+      const secretNumber = Math.floor(Math.random() * 10) + 1;
+      const maxAttempts = 3;
+
+      return function () {
+          // Game loop omitted; this function can read both constants.
+          console.log(`You have ${maxAttempts} attempts.`);
+      };
+  })();
+
+  playGame(); // You have 3 attempts.
+  // console.log(secretNumber); // ReferenceError in this version.
+  // The secret is generated once when the IIFE runs, not on each playGame() call.
+  ```
+
+- **Use `const` for a binding that must not be reassigned, and supply its initial value when declaring it. A binding connects a name to a value; keeping that connection fixed does not make an object's contents immutable.**
+  ```js
+  const playGame = function () {
+      console.log('Starting game.');
+  };
+
+  // playGame = function () {}; // TypeError: assignment to a constant.
+  // const maxAttempts;         // SyntaxError: missing initializer.
+
+  const settings = { maxAttempts: 3 };
+  settings.maxAttempts = 5; // Allowed: the object itself can change.
+  // settings = {};        // TypeError: settings cannot be reassigned.
+  ```
+
+- **Inside a function, `var` has function scope, while `let` and `const` have block scope. A block is a group of statements enclosed in curly braces, such as an `if` body; its `let` and `const` declarations are unavailable outside it.**
+  ```js
+  function showGameSettings() {
+      if (true) {
+          var maxAttempts = 3;
+          let attemptsUsed = 0;
+          const secretNumber = 7;
+      }
+
+      console.log(maxAttempts); // 3
+      // console.log(attemptsUsed); // ReferenceError
+      // console.log(secretNumber); // ReferenceError
+  }
+
+  showGameSettings();
+  // console.log(maxAttempts); // ReferenceError: var stays inside the function.
+  ```
+
+- **Declare changing state with `let` in the enclosing function block when both a loop and the code after it need access. A `let` declared in a loop header or an `if` block stays local to that scope.**
+  ```js
+  // Before: neither variable is available after the loop.
+  function showResult() {
+      for (let attempts = 1; attempts <= 3; attempts++) {
+          if (attempts === 2) {
+              let guessed = true;
+              break;
+          }
+      }
+
+      // console.log(attempts, guessed); // ReferenceError
+  }
+  ```
+  ```js
+  // After: illustrative success on the second attempt.
+  function showResult() {
+      let attempts = 0;
+      let guessed = false;
+
+      while (attempts < 3) {
+          attempts++;
+
+          if (attempts === 2) {
+              guessed = true;
+              break;
+          }
+      }
+
+      console.log(attempts, guessed); // 2, true
+  }
+
+  showResult();
+  ```
+
+- **A paused browser debugger can inspect variables available in the selected execution scope, including a closure's state. Scope limits ordinary access and `const` prevents reassignment; neither makes browser code a security boundary.**
+  ```js
+  const playGame = (function () {
+      const secretNumber = Math.floor(Math.random() * 10) + 1;
+      let maxAttempts = 3;
+
+      return function () {
+          debugger; // With DevTools open, inspect this function's scope.
+          console.log(secretNumber, maxAttempts);
+      };
+  })();
+
+  playGame();
+  // While paused here, the console can read secretNumber and maxAttempts.
+  // maxAttempts can be reassigned; secretNumber is a constant.
+  ```
+
+> **Takeaway:** Choose declarations by scope and reassignment: `var` stays within its function, `let` and `const` stay within their block, and closures let functions retain access to enclosed state.
